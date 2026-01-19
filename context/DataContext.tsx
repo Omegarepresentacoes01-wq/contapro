@@ -26,10 +26,13 @@ interface DataContextType {
 const DataContext = createContext<DataContextType>(null!);
 
 export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
-  // Helper para carregar dados do localStorage ou usar mocks
   const loadData = (key: string, defaultValue: any) => {
-    const saved = localStorage.getItem(`contapro_${key}`);
-    return saved ? JSON.parse(saved) : defaultValue;
+    try {
+      const saved = localStorage.getItem(`contapro_${key}`);
+      return saved ? JSON.parse(saved) : defaultValue;
+    } catch (e) {
+      return defaultValue;
+    }
   };
 
   const [clients, setClients] = useState<Client[]>(() => loadData('clients', mockClients));
@@ -38,7 +41,6 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
   const [payables, setPayables] = useState<Payable[]>(() => loadData('payables', mockPayables));
   const [payroll, setPayroll] = useState<Payroll[]>(() => loadData('payroll', mockPayroll));
 
-  // Efeito para persistir dados sempre que mudarem
   useEffect(() => {
     localStorage.setItem('contapro_clients', JSON.stringify(clients));
     localStorage.setItem('contapro_employees', JSON.stringify(employees));
@@ -51,8 +53,28 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
   const updateClient = (client: Client) => setClients(prev => prev.map(c => c.id === client.id ? client : c));
   const removeClient = (id: string) => setClients(prev => prev.filter(c => c.id !== id));
 
-  const addEmployee = (emp: Employee) => setEmployees(prev => [emp, ...prev]);
-  const removeEmployee = (id: string) => setEmployees(prev => prev.filter(e => e.id !== id));
+  const addEmployee = (emp: Employee) => {
+    setEmployees(prev => [emp, ...prev]);
+    // Gera automaticamente uma entrada na folha para o novo funcionário
+    const newPayroll: Payroll = {
+        id: Math.random().toString(36).substr(2, 9),
+        employeeId: emp.id,
+        employeeName: emp.nome,
+        competencia: new Date().toISOString().slice(0, 7),
+        salarioBase: emp.salarioBase,
+        beneficios: 0,
+        descontos: 0,
+        comissao: 0,
+        total: emp.salarioBase,
+        status: 'ABERTA'
+    };
+    setPayroll(prev => [newPayroll, ...prev]);
+  };
+  
+  const removeEmployee = (id: string) => {
+    setEmployees(prev => prev.filter(e => e.id !== id));
+    setPayroll(prev => prev.filter(p => p.employeeId !== id));
+  };
   
   const addReceivable = (rec: Receivable) => setReceivables(prev => [rec, ...prev]);
   const removeReceivable = (id: string) => setReceivables(prev => prev.filter(r => r.id !== id));
@@ -68,13 +90,8 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
     }
   };
 
-  const closePayroll = () => {
-    setPayroll(prev => prev.map(p => ({ ...p, status: 'FECHADA' })));
-  };
-
-  const updatePayrollEntry = (entry: Payroll) => {
-    setPayroll(prev => prev.map(p => p.id === entry.id ? entry : p));
-  };
+  const closePayroll = () => setPayroll(prev => prev.map(p => ({ ...p, status: 'FECHADA' })));
+  const updatePayrollEntry = (entry: Payroll) => setPayroll(prev => prev.map(p => p.id === entry.id ? entry : p));
 
   return (
     <DataContext.Provider value={{ 
