@@ -8,7 +8,11 @@ import {
   ArrowDownRight, 
   FileDown, 
   CreditCard,
-  Briefcase
+  Briefcase,
+  Lightbulb,
+  Target,
+  AlertTriangle,
+  Zap
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -67,17 +71,46 @@ const KPICard = ({ title, value, change, trend, icon: Icon, link, variant }: any
 };
 
 export const Dashboard = () => {
-  const { receivables, payables, clients } = useData();
+  const { receivables, payables, clients, payroll } = useData();
 
   const totalReceita = receivables.reduce((acc, curr) => acc + curr.valor, 0);
   const totalDespesa = payables.reduce((acc, curr) => acc + curr.valor, 0);
   const totalAReceber = receivables.filter(r => r.status !== 'PAGO').reduce((acc, curr) => acc + curr.valor, 0);
 
+  // --- Lógica de Insights Inteligentes (Sem IA) ---
+  const insights = useMemo(() => {
+    // 1. Maior Cliente (Curva ABC)
+    const clientRevenue: Record<string, number> = {};
+    receivables.forEach(r => {
+        clientRevenue[r.clientName] = (clientRevenue[r.clientName] || 0) + r.valor;
+    });
+    const topClientName = Object.keys(clientRevenue).reduce((a, b) => clientRevenue[a] > clientRevenue[b] ? a : b, '');
+    const topClientValue = clientRevenue[topClientName] || 0;
+    const revenueShare = totalReceita > 0 ? ((topClientValue / totalReceita) * 100).toFixed(1) : '0';
+
+    // 2. Maior Ofensor de Custos
+    const categoryExpenses: Record<string, number> = {};
+    payables.forEach(p => {
+        categoryExpenses[p.categoria] = (categoryExpenses[p.categoria] || 0) + p.valor;
+    });
+    const topCategory = Object.keys(categoryExpenses).reduce((a, b) => categoryExpenses[a] > categoryExpenses[b] ? a : b, '');
+    
+    // 3. Impacto da Folha
+    const totalPayroll = payroll.reduce((acc, p) => acc + p.total, 0);
+    const totalOutflows = totalDespesa + totalPayroll;
+    const payrollImpact = totalOutflows > 0 ? ((totalPayroll / totalOutflows) * 100).toFixed(1) : '0';
+
+    return {
+        topClient: { name: topClientName, value: topClientValue, share: revenueShare },
+        topCategory: { name: topCategory, value: categoryExpenses[topCategory] || 0 },
+        payrollImpact
+    };
+  }, [receivables, payables, payroll, totalReceita, totalDespesa]);
+  // ------------------------------------------------
+
   const dataFlow = useMemo(() => {
-    // Agrupa por mês para criar o gráfico dinâmico
     const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
     return months.map((m, idx) => {
-        // Simulação de histórico + dados reais no mês atual (Maio = idx 4)
         if (idx < 4) return { name: m, entrada: 2000 + (idx * 500), saida: 1500 + (idx * 200) };
         if (idx === 4) return { name: m, entrada: totalReceita, saida: totalDespesa };
         return { name: m, entrada: 0, saida: 0 };
@@ -120,6 +153,58 @@ export const Dashboard = () => {
         <KPICard title="Em Aberto" value={formatCurrency(totalAReceber)} change="+8%" trend="up" icon={TrendingUp} link="/financeiro/receber" variant="amber" />
         <KPICard title="Clientes Ativos" value={clients.length} change="+1" trend="up" icon={Briefcase} link="/cadastros/clientes" variant="emerald" />
       </div>
+
+      {/* CARD DE INTELIGÊNCIA DE DADOS */}
+      <Card className="bg-slate-900 text-white border-none shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+        <CardHeader className="relative z-10 border-b border-white/10 pb-4">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-blue-200">
+                <Lightbulb className="h-4 w-4 text-yellow-400" /> Insights do Sistema
+            </CardTitle>
+        </CardHeader>
+        <CardContent className="relative z-10 pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Insight 1 */}
+                <div className="flex gap-4 items-start group">
+                    <div className="h-10 w-10 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/30 transition-colors">
+                        <Target className="h-5 w-5 text-emerald-400" />
+                    </div>
+                    <div>
+                        <p className="text-xs font-bold uppercase text-slate-400 mb-1">Principal Fonte de Receita</p>
+                        <p className="font-medium text-slate-200 text-sm">
+                            O cliente <span className="text-white font-bold">{insights.topClient.name}</span> representa <span className="text-emerald-400 font-bold">{insights.topClient.share}%</span> do seu faturamento total registrado.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Insight 2 */}
+                <div className="flex gap-4 items-start group">
+                    <div className="h-10 w-10 rounded-lg bg-rose-500/20 flex items-center justify-center shrink-0 group-hover:bg-rose-500/30 transition-colors">
+                        <AlertTriangle className="h-5 w-5 text-rose-400" />
+                    </div>
+                    <div>
+                        <p className="text-xs font-bold uppercase text-slate-400 mb-1">Foco de Custos</p>
+                        <p className="font-medium text-slate-200 text-sm">
+                            A categoria <span className="text-white font-bold">{insights.topCategory.name || 'N/A'}</span> é a que mais consome recursos, totalizando <span className="text-rose-400 font-bold">{formatCurrency(insights.topCategory.value)}</span>.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Insight 3 */}
+                <div className="flex gap-4 items-start group">
+                    <div className="h-10 w-10 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0 group-hover:bg-amber-500/30 transition-colors">
+                        <Zap className="h-5 w-5 text-amber-400" />
+                    </div>
+                    <div>
+                        <p className="text-xs font-bold uppercase text-slate-400 mb-1">Impacto Operacional</p>
+                        <p className="font-medium text-slate-200 text-sm">
+                            A Folha de Pagamento compromete atualmente <span className="text-amber-400 font-bold">{insights.payrollImpact}%</span> de todas as saídas financeiras da empresa.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-12">
         <Card className="lg:col-span-8 shadow-xl">
