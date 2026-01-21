@@ -1,10 +1,11 @@
 
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, Button, Badge, Modal, Input } from '../components/ui';
-import { formatCurrency } from '../services/mocks';
-import { Download, Lock, CheckCircle2, Edit3, User, ChevronRight, Save } from 'lucide-react';
+import { formatCurrency, formatDate } from '../services/mocks';
+import { Download, Lock, CheckCircle2, Edit3, User, ChevronRight, Save, Printer } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { Payroll } from '../types';
+import { downloadFile, generateCNABMock } from '../services/utils';
 
 export const PayrollPage = () => {
   const { payroll, closePayroll, updatePayrollEntry } = useData();
@@ -18,7 +19,57 @@ export const PayrollPage = () => {
   const isAllClosed = payroll.every(p => p.status === 'FECHADA');
 
   const handleExport = () => {
-    alert("Gerando arquivo CNAB para o banco... Download iniciado.");
+    const cnabContent = generateCNABMock("CONTABIL PRO LTDA", payroll);
+    downloadFile(cnabContent, `remessa_folha_${new Date().toISOString().slice(0,10)}.rem`, 'text/plain');
+    alert("Arquivo de remessa bancária gerado e baixado com sucesso!");
+  };
+
+  const handlePrintHolerite = (item: Payroll) => {
+    // Abre uma janela pop-up simples para impressão
+    const printWindow = window.open('', '', 'width=800,height=600');
+    if (printWindow) {
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Holerite - ${item.employeeName}</title>
+                    <style>
+                        body { font-family: 'Courier New', monospace; padding: 20px; }
+                        .header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 20px; }
+                        .row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+                        .bold { font-weight: bold; }
+                        .footer { border-top: 2px dashed #000; margin-top: 20px; padding-top: 10px; text-align: center;}
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h2>RECIBO DE PAGAMENTO DE SALÁRIO</h2>
+                        <p>Competência: ${item.competencia}</p>
+                        <p>${item.employeeName}</p>
+                    </div>
+                    <div class="content">
+                        <div class="row"><span>Salário Base</span><span>${formatCurrency(item.salarioBase)}</span></div>
+                        <div class="row"><span>Vantagens/Adicionais</span><span>${formatCurrency(item.beneficios + item.comissao)}</span></div>
+                        <div class="row"><span>Descontos/INSS/IRRF</span><span>-${formatCurrency(item.descontos)}</span></div>
+                        <br/>
+                        <div class="row bold">
+                            <span>LÍQUIDO A RECEBER</span>
+                            <span>${formatCurrency(item.total)}</span>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <p>Declaro ter recebido a importância líquida discriminada neste recibo.</p>
+                        <br/><br/>
+                        <p>__________________________________________</p>
+                        <p>Assinatura do Colaborador</p>
+                    </div>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    }
   };
 
   const handleEditEntry = (entry: Payroll) => {
@@ -45,9 +96,9 @@ export const PayrollPage = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Folha de Pagamento</h1>
-          <p className="text-muted-foreground">Competência Atual: Novembro / 2023</p>
+          <p className="text-muted-foreground">Competência Atual: {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
             <Button variant="outline" onClick={handleExport}><Download className="mr-2 h-4 w-4" /> Exportar Bancário</Button>
             {!isAllClosed && (
                 <Button variant="secondary" onClick={() => setIsListModalOpen(true)}>
@@ -98,7 +149,7 @@ export const PayrollPage = () => {
                   <th className="p-4 font-medium">Comissão</th>
                   <th className="p-4 font-medium">Líquido</th>
                   <th className="p-4 font-medium">Status</th>
-                  <th className="p-4 font-medium text-right">Holerite</th>
+                  <th className="p-4 font-medium text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -114,7 +165,9 @@ export const PayrollPage = () => {
                       <Badge variant={item.status === 'FECHADA' ? 'secondary' : 'warning'}>{item.status}</Badge>
                     </td>
                     <td className="p-4 text-right">
-                        <Button size="sm" variant="outline" onClick={() => alert(`Imprimindo holerite de ${item.employeeName}`)}>Ver PDF</Button>
+                        <Button size="sm" variant="outline" onClick={() => handlePrintHolerite(item)}>
+                            <Printer className="h-4 w-4 mr-1" /> PDF
+                        </Button>
                     </td>
                   </tr>
                 ))}
@@ -134,6 +187,7 @@ export const PayrollPage = () => {
                         key={item.id} 
                         onClick={() => handleEditEntry(item)}
                         className="w-full flex items-center justify-between p-4 hover:bg-muted transition-colors text-left"
+                        disabled={item.status === 'FECHADA'}
                     >
                         <div className="flex items-center gap-3">
                             <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
@@ -144,7 +198,8 @@ export const PayrollPage = () => {
                                 <p className="text-xs text-muted-foreground">Atual: {formatCurrency(item.total)}</p>
                             </div>
                         </div>
-                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        {item.status !== 'FECHADA' && <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+                        {item.status === 'FECHADA' && <Lock className="h-3 w-3 text-muted-foreground" />}
                     </button>
                 ))}
             </div>

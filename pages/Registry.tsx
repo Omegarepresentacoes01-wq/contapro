@@ -11,11 +11,24 @@ interface RegistryProps {
 
 export const Registry = ({ type }: RegistryProps) => {
   const isClient = type === 'clients';
-  const { clients, employees, addClient, addEmployee, removeClient, removeEmployee } = useData();
+  const { 
+    clients, 
+    employees, 
+    addClient, 
+    addEmployee, 
+    removeClient, 
+    removeEmployee,
+    updateClient,
+    updateEmployee
+  } = useData();
+  
   const data = isClient ? clients : employees;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Estado para controle de edição
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({ nome: '', doc: '', valor: '' });
 
   const filteredData = data.filter((item: any) => 
@@ -29,25 +42,69 @@ export const Registry = ({ type }: RegistryProps) => {
     }
   };
 
+  const openNewModal = () => {
+    setEditingId(null);
+    setFormData({ nome: '', doc: '', valor: '' });
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (item: any) => {
+    setEditingId(item.id);
+    setFormData({
+        nome: item.nome,
+        doc: isClient ? item.cnpjCpf : item.cargo,
+        valor: isClient ? item.honorarioMensal.toString() : item.salarioBase.toString()
+    });
+    setIsModalOpen(true);
+  };
+
   const handleSave = () => {
     if (!formData.nome || !formData.valor) return alert("Preencha os campos obrigatórios");
     
-    const id = generateId();
-    if (isClient) {
-      addClient({
-        id, nome: formData.nome, cnpjCpf: formData.doc,
-        regime: 'Simples Nacional', honorarioMensal: Number(formData.valor),
-        status: 'ATIVO', inadimplente: false
-      });
+    if (editingId) {
+        // Modo Edição
+        if (isClient) {
+            updateClient({
+                id: editingId,
+                nome: formData.nome,
+                cnpjCpf: formData.doc,
+                regime: 'Simples Nacional', // Mantendo padrão pois não há campo no form simplificado
+                honorarioMensal: Number(formData.valor),
+                status: 'ATIVO',
+                inadimplente: false
+            });
+        } else {
+            // Ao editar funcionário, idealmente atualizaria a folha também, mas vamos focar no cadastro aqui
+            updateEmployee({
+                id: editingId,
+                nome: formData.nome,
+                cargo: formData.doc,
+                salarioBase: Number(formData.valor),
+                tipoContrato: 'CLT',
+                status: 'ATIVO'
+            });
+        }
     } else {
-      addEmployee({
-        id, nome: formData.nome, cargo: formData.doc,
-        salarioBase: Number(formData.valor), tipoContrato: 'CLT',
-        status: 'ATIVO'
-      });
+        // Modo Criação
+        const id = generateId();
+        if (isClient) {
+            addClient({
+                id, nome: formData.nome, cnpjCpf: formData.doc,
+                regime: 'Simples Nacional', honorarioMensal: Number(formData.valor),
+                status: 'ATIVO', inadimplente: false
+            });
+        } else {
+            addEmployee({
+                id, nome: formData.nome, cargo: formData.doc,
+                salarioBase: Number(formData.valor), tipoContrato: 'CLT',
+                status: 'ATIVO'
+            });
+        }
     }
+    
     setIsModalOpen(false);
     setFormData({ nome: '', doc: '', valor: '' });
+    setEditingId(null);
   };
 
   return (
@@ -59,7 +116,7 @@ export const Registry = ({ type }: RegistryProps) => {
           </h1>
           <p className="text-slate-500 text-sm mt-1">Gestão de cadastros e registros do sistema.</p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)} className="font-bold shadow-lg shadow-primary/20">
+        <Button onClick={openNewModal} className="font-bold shadow-lg shadow-primary/20">
           <Plus className="mr-2 h-4 w-4" /> Novo {isClient ? 'Cliente' : 'Funcionário'}
         </Button>
       </div>
@@ -106,8 +163,12 @@ export const Registry = ({ type }: RegistryProps) => {
                         <Badge variant={item.status === 'ATIVO' ? 'success' : 'secondary'}>{item.status}</Badge>
                     </td>
                     <td className="p-4 text-right flex justify-end gap-2">
-                      <Button size="sm" variant="ghost" className="text-slate-400 hover:text-primary" onClick={() => alert("Função Editar: Em breve")}><Edit className="h-4 w-4" /></Button>
-                      <Button size="sm" variant="ghost" className="text-red-500 hover:bg-red-50" onClick={() => handleDelete(item.id)}><Trash2 className="h-4 w-4" /></Button>
+                      <Button size="sm" variant="ghost" className="text-slate-400 hover:text-primary" onClick={() => openEditModal(item)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="text-red-500 hover:bg-red-50" onClick={() => handleDelete(item.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -117,7 +178,7 @@ export const Registry = ({ type }: RegistryProps) => {
         </CardContent>
       </Card>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={`Novo ${isClient ? 'Cliente' : 'Funcionário'}`}>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={`${editingId ? 'Editar' : 'Novo'} ${isClient ? 'Cliente' : 'Funcionário'}`}>
         <div className="space-y-5 py-4">
             <div className="space-y-2">
                 <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Nome Completo</label>
@@ -133,7 +194,9 @@ export const Registry = ({ type }: RegistryProps) => {
             </div>
             <div className="flex justify-end gap-3 pt-6">
                 <Button variant="outline" className="border-2 font-bold" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
-                <Button onClick={handleSave} className="font-bold shadow-lg shadow-primary/20">Confirmar Cadastro</Button>
+                <Button onClick={handleSave} className="font-bold shadow-lg shadow-primary/20">
+                    {editingId ? 'Salvar Alterações' : 'Confirmar Cadastro'}
+                </Button>
             </div>
         </div>
       </Modal>

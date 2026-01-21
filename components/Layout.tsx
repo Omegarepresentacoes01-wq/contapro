@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
@@ -44,6 +45,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
   const { logout, user } = useAuth();
   const location = useLocation();
   const [isDark, setIsDark] = useState(false);
+  const [hasNotifications, setHasNotifications] = useState(true);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -138,9 +140,14 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
               {isDark ? <Sun className="h-5 w-5 text-amber-400" /> : <Moon className="h-5 w-5 text-slate-600" />}
             </Button>
             
-            <Button variant="ghost" size="icon" className="relative rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+            <Button 
+                variant="ghost" 
+                size="icon" 
+                className="relative rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+                onClick={() => setHasNotifications(false)}
+            >
               <Bell className="h-5 w-5 text-slate-600 dark:text-slate-400" />
-              <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white dark:border-slate-900"></span>
+              {hasNotifications && <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white dark:border-slate-900"></span>}
             </Button>
             
             <div className="h-8 w-[2px] bg-slate-200 dark:bg-slate-800 mx-2"></div>

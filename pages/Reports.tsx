@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, Button, Input, Select, Badge 
 import { FileText, Download, Filter, Calendar, ArrowUpCircle, ArrowDownCircle, Calculator } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { formatCurrency, formatDate } from '../services/mocks';
+import { convertToCSV, downloadFile } from '../services/utils';
 
 export const Reports = () => {
   const { receivables, payables, payroll } = useData();
@@ -67,8 +68,22 @@ export const Reports = () => {
     }, { income: 0, expense: 0 });
   }, [reportData]);
 
-  const handleExport = (format: string) => {
-    alert(`Gerando relatório em ${format.toUpperCase()} para o período ${formatDate(startDate)} a ${formatDate(endDate)}...`);
+  const handleExport = () => {
+    // Prepara dados para CSV
+    const exportData = reportData.map(item => ({
+        Data: formatDate(item.sortDate),
+        Descrição: item.label,
+        Tipo: item.type,
+        Valor: item.valor.toFixed(2),
+        Status: item.status
+    }));
+
+    const csvContent = convertToCSV(exportData);
+    downloadFile(csvContent, `relatorio_financeiro_${startDate}_${endDate}.csv`, 'text/csv');
+  };
+
+  const handlePrint = () => {
+    window.print();
   };
 
   return (
@@ -79,11 +94,11 @@ export const Reports = () => {
           <p className="text-muted-foreground">Análise detalhada de movimentações por período.</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => handleExport('pdf')}>
-            <Download className="mr-2 h-4 w-4" /> PDF
+          <Button variant="outline" onClick={handlePrint}>
+            <Download className="mr-2 h-4 w-4" /> PDF / Imprimir
           </Button>
-          <Button variant="outline" onClick={() => handleExport('excel')}>
-            <FileText className="mr-2 h-4 w-4" /> Excel
+          <Button variant="outline" onClick={handleExport}>
+            <FileText className="mr-2 h-4 w-4" /> Exportar CSV
           </Button>
         </div>
       </div>
