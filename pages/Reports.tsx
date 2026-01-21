@@ -93,7 +93,7 @@ export const Reports = () => {
           <h1 className="text-3xl font-bold tracking-tight">Relatórios Financeiros</h1>
           <p className="text-muted-foreground">Análise detalhada de movimentações por período.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 print:hidden">
           <Button variant="outline" onClick={handlePrint}>
             <Download className="mr-2 h-4 w-4" /> PDF / Imprimir
           </Button>
@@ -103,8 +103,8 @@ export const Reports = () => {
         </div>
       </div>
 
-      {/* Filtros */}
-      <Card>
+      {/* Filtros - Ocultos na impressão */}
+      <Card className="print:hidden">
         <CardContent className="p-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div className="space-y-2">
@@ -143,9 +143,9 @@ export const Reports = () => {
 
       {/* Resumo */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="bg-blue-50/50 border-blue-100">
+        <Card className="bg-blue-50/50 border-blue-100 print:bg-transparent print:border-black">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-blue-600 flex items-center gap-2">
+            <CardTitle className="text-sm font-medium text-blue-600 flex items-center gap-2 print:text-black">
               <ArrowUpCircle className="h-4 w-4" /> Entradas no Período
             </CardTitle>
           </CardHeader>
@@ -153,23 +153,23 @@ export const Reports = () => {
             <div className="text-2xl font-bold">{formatCurrency(totals.income)}</div>
           </CardContent>
         </Card>
-        <Card className="bg-red-50/50 border-red-100">
+        <Card className="bg-red-50/50 border-red-100 print:bg-transparent print:border-black">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-red-600 flex items-center gap-2">
+            <CardTitle className="text-sm font-medium text-red-600 flex items-center gap-2 print:text-black">
               <ArrowDownCircle className="h-4 w-4" /> Saídas no Período
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(totals.expense)}</div>
-            <p className="text-xs text-red-400 mt-1">Inclui despesas e folha</p>
+            <p className="text-xs text-red-400 mt-1 print:hidden">Inclui despesas e folha</p>
           </CardContent>
         </Card>
-        <Card className={totals.income - totals.expense >= 0 ? "bg-green-50/50 border-green-100" : "bg-orange-50/50 border-orange-100"}>
+        <Card className={`${totals.income - totals.expense >= 0 ? "bg-green-50/50 border-green-100" : "bg-orange-50/50 border-orange-100"} print:bg-transparent print:border-black`}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-foreground">Saldo Líquido</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${totals.income - totals.expense >= 0 ? 'text-green-600' : 'text-orange-600'}`}>
+            <div className={`text-2xl font-bold ${totals.income - totals.expense >= 0 ? 'text-green-600' : 'text-orange-600'} print:text-black`}>
               {formatCurrency(totals.income - totals.expense)}
             </div>
           </CardContent>
@@ -177,14 +177,14 @@ export const Reports = () => {
       </div>
 
       {/* Tabela de Dados */}
-      <Card>
+      <Card className="print:shadow-none print:border-none">
         <CardHeader>
           <CardTitle className="text-base">Detalhamento das Movimentações</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-muted/50 border-b">
+              <thead className="bg-muted/50 border-b print:bg-transparent print:border-black">
                 <tr className="text-left">
                   <th className="p-4 font-medium">Data Ref.</th>
                   <th className="p-4 font-medium">Descrição / Detalhes</th>
@@ -195,12 +195,12 @@ export const Reports = () => {
               </thead>
               <tbody>
                 {reportData.length > 0 ? reportData.map((item: any) => (
-                  <tr key={item.id} className="border-b hover:bg-muted/30 transition-colors">
+                  <tr key={item.id} className="border-b hover:bg-muted/30 transition-colors print:border-black">
                     <td className="p-4 whitespace-nowrap">{formatDate(item.sortDate)}</td>
                     <td className="p-4">
                         <div className="font-medium">{item.label}</div>
                         {item.details && (
-                            <div className="text-xs text-muted-foreground mt-0.5 font-mono">
+                            <div className="text-xs text-muted-foreground mt-0.5 font-mono print:text-black">
                                 {item.details}
                             </div>
                         )}
@@ -220,7 +220,7 @@ export const Reports = () => {
                         {item.status}
                       </Badge>
                     </td>
-                    <td className={`p-4 text-right font-bold ${item.type === 'INCOME' ? 'text-green-600' : 'text-red-500'}`}>
+                    <td className={`p-4 text-right font-bold ${item.type === 'INCOME' ? 'text-green-600' : 'text-red-500'} print:text-black`}>
                       {item.type === 'INCOME' ? '+' : '-'} {formatCurrency(item.valor)}
                     </td>
                   </tr>

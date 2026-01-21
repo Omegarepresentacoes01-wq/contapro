@@ -35,8 +35,9 @@ export const Registry = ({ type }: RegistryProps) => {
     item.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Garante a confirmação de exclusão
   const handleDelete = (id: string) => {
-    if (confirm(`Deseja realmente excluir este ${isClient ? 'cliente' : 'funcionário'}?`)) {
+    if (window.confirm(`ATENÇÃO: Deseja realmente excluir este ${isClient ? 'cliente' : 'funcionário'} do sistema?`)) {
       if (isClient) removeClient(id);
       else removeEmployee(id);
     }
@@ -68,13 +69,12 @@ export const Registry = ({ type }: RegistryProps) => {
                 id: editingId,
                 nome: formData.nome,
                 cnpjCpf: formData.doc,
-                regime: 'Simples Nacional', // Mantendo padrão pois não há campo no form simplificado
+                regime: 'Simples Nacional', 
                 honorarioMensal: Number(formData.valor),
                 status: 'ATIVO',
                 inadimplente: false
             });
         } else {
-            // Ao editar funcionário, idealmente atualizaria a folha também, mas vamos focar no cadastro aqui
             updateEmployee({
                 id: editingId,
                 nome: formData.nome,
@@ -116,12 +116,12 @@ export const Registry = ({ type }: RegistryProps) => {
           </h1>
           <p className="text-slate-500 text-sm mt-1">Gestão de cadastros e registros do sistema.</p>
         </div>
-        <Button onClick={openNewModal} className="font-bold shadow-lg shadow-primary/20">
+        <Button onClick={openNewModal} className="font-bold shadow-lg shadow-primary/20 print:hidden">
           <Plus className="mr-2 h-4 w-4" /> Novo {isClient ? 'Cliente' : 'Funcionário'}
         </Button>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 print:hidden">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input 
@@ -133,7 +133,7 @@ export const Registry = ({ type }: RegistryProps) => {
         </div>
       </div>
 
-      <Card className="shadow-md">
+      <Card className="shadow-md print:shadow-none print:border-none">
         <CardContent className="p-0">
           <div className="w-full overflow-auto">
             <table className="w-full text-sm">
@@ -143,7 +143,7 @@ export const Registry = ({ type }: RegistryProps) => {
                   <th className="p-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">{isClient ? 'Documento' : 'Cargo'}</th>
                   <th className="p-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">{isClient ? 'Honorário' : 'Salário'}</th>
                   <th className="p-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Status</th>
-                  <th className="p-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest text-right">Ações</th>
+                  <th className="p-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest text-right print:hidden">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -151,7 +151,7 @@ export const Registry = ({ type }: RegistryProps) => {
                   <tr key={item.id} className="border-b-2 border-slate-50 dark:border-slate-800 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary border-2 border-primary/10">
+                        <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary border-2 border-primary/10 print:hidden">
                             {isClient ? <Building className="h-5 w-5" /> : <User className="h-5 w-5" />}
                         </div>
                         <span className="font-bold text-slate-900 dark:text-white">{item.nome}</span>
@@ -162,7 +162,7 @@ export const Registry = ({ type }: RegistryProps) => {
                     <td className="p-4">
                         <Badge variant={item.status === 'ATIVO' ? 'success' : 'secondary'}>{item.status}</Badge>
                     </td>
-                    <td className="p-4 text-right flex justify-end gap-2">
+                    <td className="p-4 text-right flex justify-end gap-2 print:hidden">
                       <Button size="sm" variant="ghost" className="text-slate-400 hover:text-primary" onClick={() => openEditModal(item)}>
                         <Edit className="h-4 w-4" />
                       </Button>

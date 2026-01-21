@@ -46,8 +46,9 @@ export const Financial = ({ type }: FinancialProps) => {
     setIsBaixaModalOpen(false);
   };
 
+  // Garante a confirmação de exclusão
   const handleDelete = (id: string) => {
-    if (confirm("Tem certeza que deseja excluir este lançamento?")) {
+    if (window.confirm("ATENÇÃO: Tem certeza que deseja excluir este lançamento permanentemente?")) {
       if (isReceivable) removeReceivable(id);
       else removePayable(id);
     }
@@ -84,12 +85,12 @@ export const Financial = ({ type }: FinancialProps) => {
           </h1>
           <p className="text-slate-500 text-sm mt-1">Gestão de fluxo financeiro do escritório.</p>
         </div>
-        <Button onClick={() => setIsNewModalOpen(true)} className="shadow-lg shadow-primary/20 font-bold">
+        <Button onClick={() => setIsNewModalOpen(true)} className="shadow-lg shadow-primary/20 font-bold print:hidden">
           <Plus className="mr-2 h-4 w-4" /> {isReceivable ? 'Nova Receita' : 'Nova Despesa'}
         </Button>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 print:hidden">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input 
@@ -102,7 +103,7 @@ export const Financial = ({ type }: FinancialProps) => {
         <Button variant="outline" size="icon" className="border-2"><Filter className="h-4 w-4" /></Button>
       </div>
 
-      <Card className="shadow-md">
+      <Card className="shadow-md print:shadow-none print:border-none">
         <CardContent className="p-0">
           <div className="w-full overflow-auto">
             <table className="w-full text-sm">
@@ -112,7 +113,7 @@ export const Financial = ({ type }: FinancialProps) => {
                   <th className="p-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Vencimento</th>
                   <th className="p-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Valor</th>
                   <th className="p-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Status</th>
-                  <th className="p-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest text-right">Ações</th>
+                  <th className="p-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest text-right print:hidden">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -126,7 +127,7 @@ export const Financial = ({ type }: FinancialProps) => {
                             {item.status}
                         </Badge>
                     </td>
-                    <td className="p-4 text-right flex justify-end gap-2">
+                    <td className="p-4 text-right flex justify-end gap-2 print:hidden">
                       {item.status !== 'PAGO' && (
                         <Button size="sm" variant="outline" className="border-2 font-bold" onClick={() => handleBaixa(item)}>Baixar</Button>
                       )}

@@ -65,8 +65,8 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] bg-[#f8fafc] dark:bg-[#020617]">
-      {/* Sidebar - Desktop */}
-      <div className="hidden border-r-2 border-slate-800/50 bg-[#0f172a] md:block shadow-2xl z-20">
+      {/* Sidebar - Desktop (Oculto na impressão) */}
+      <div className="hidden border-r-2 border-slate-800/50 bg-[#0f172a] md:block shadow-2xl z-20 print:hidden">
         <div className="flex h-full max-h-screen flex-col gap-4">
           <div className="flex h-16 items-center px-6 border-b-2 border-slate-800/50 mb-4">
             <Link to="/" className="flex items-center gap-3">
@@ -121,9 +121,9 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col">
-        {/* Topbar */}
-        <header className="flex h-16 items-center gap-4 border-b-2 border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 sticky top-0 z-10">
+      <div className="flex flex-col print:w-full print:block">
+        {/* Topbar (Oculto na impressão) */}
+        <header className="flex h-16 items-center gap-4 border-b-2 border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 sticky top-0 z-10 print:hidden">
           <div className="w-full flex-1">
             <div className="relative group max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
@@ -164,7 +164,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
           </div>
         </header>
 
-        <main className="flex-1 p-6 lg:p-10 overflow-y-auto">
+        <main className="flex-1 p-6 lg:p-10 overflow-y-auto print:p-0 print:overflow-visible">
           {children}
         </main>
       </div>
