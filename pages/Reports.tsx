@@ -9,12 +9,27 @@ import { convertToCSV, downloadFile } from '../services/utils';
 export const Reports = () => {
   const { receivables, payables, payroll } = useData();
   
-  // Estados de filtro
-  const [startDate, setStartDate] = useState('2023-01-01');
-  const [endDate, setEndDate] = useState('2023-12-31');
-  const [category, setCategory] = useState('all');
+  // Estados dos Inputs (não aplicam filtro imediatamente)
+  const [dateStartInput, setDateStartInput] = useState('2023-01-01');
+  const [dateEndInput, setDateEndInput] = useState('2023-12-31');
+  const [catInput, setCatInput] = useState('all');
 
-  // Mescla e filtra os dados
+  // Estado dos Filtros Ativos (aplicados ao clicar no botão)
+  const [filters, setFilters] = useState({
+    start: '2023-01-01',
+    end: '2023-12-31',
+    category: 'all'
+  });
+
+  const applyFilters = () => {
+    setFilters({
+      start: dateStartInput,
+      end: dateEndInput,
+      category: catInput
+    });
+  };
+
+  // Mescla e filtra os dados usando os filtros ativos
   const reportData = useMemo(() => {
     const combined = [
       ...receivables.map(r => ({ 
@@ -45,15 +60,15 @@ export const Reports = () => {
 
     return combined
       .filter(item => {
-        const dateMatch = item.sortDate >= startDate && item.sortDate <= endDate;
-        const categoryMatch = category === 'all' || 
-                             (category === 'income' && item.type === 'INCOME') || 
-                             (category === 'expense' && item.type === 'EXPENSE') ||
-                             (category === 'payroll' && item.type === 'PAYROLL');
+        const dateMatch = item.sortDate >= filters.start && item.sortDate <= filters.end;
+        const categoryMatch = filters.category === 'all' || 
+                             (filters.category === 'income' && item.type === 'INCOME') || 
+                             (filters.category === 'expense' && item.type === 'EXPENSE') ||
+                             (filters.category === 'payroll' && item.type === 'PAYROLL');
         return dateMatch && categoryMatch;
       })
       .sort((a, b) => b.sortDate.localeCompare(a.sortDate));
-  }, [receivables, payables, payroll, startDate, endDate, category]);
+  }, [receivables, payables, payroll, filters]);
 
   // Cálculos de resumo
   const totals = useMemo(() => {
@@ -79,7 +94,7 @@ export const Reports = () => {
     }));
 
     const csvContent = convertToCSV(exportData);
-    downloadFile(csvContent, `relatorio_financeiro_${startDate}_${endDate}.csv`, 'text/csv');
+    downloadFile(csvContent, `relatorio_financeiro_${filters.start}_${filters.end}.csv`, 'text/csv');
   };
 
   const handlePrint = () => {
@@ -111,21 +126,21 @@ export const Reports = () => {
               <label className="text-sm font-medium flex items-center gap-1">
                 <Calendar className="h-3 w-3" /> Início
               </label>
-              <Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
+              <Input type="date" value={dateStartInput} onChange={e => setDateStartInput(e.target.value)} />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center gap-1">
                 <Calendar className="h-3 w-3" /> Fim
               </label>
-              <Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
+              <Input type="date" value={dateEndInput} onChange={e => setDateEndInput(e.target.value)} />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center gap-1">
                 <Filter className="h-3 w-3" /> Tipo de Lançamento
               </label>
               <Select 
-                value={category} 
-                onChange={setCategory} 
+                value={catInput} 
+                onChange={setCatInput} 
                 options={[
                   { label: 'Todos os Lançamentos', value: 'all' },
                   { label: 'Apenas Receitas', value: 'income' },
@@ -134,7 +149,7 @@ export const Reports = () => {
                 ]} 
               />
             </div>
-            <Button variant="secondary" className="w-full">
+            <Button variant="secondary" className="w-full" onClick={applyFilters}>
               <Calculator className="mr-2 h-4 w-4" /> Atualizar Vista
             </Button>
           </div>

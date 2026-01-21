@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, Button, Input, Badge, Modal } from '../components/ui';
-import { Search, Filter, Plus, Trash2 } from 'lucide-react';
+import { Search, Plus, Trash2 } from 'lucide-react';
 import { formatCurrency, formatDate, generateId } from '../services/mocks';
 import { Receivable, Payable } from '../types';
 import { useData } from '../context/DataContext';
@@ -100,7 +100,6 @@ export const Financial = ({ type }: FinancialProps) => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button variant="outline" size="icon" className="border-2"><Filter className="h-4 w-4" /></Button>
       </div>
 
       <Card className="shadow-md print:shadow-none print:border-none">
