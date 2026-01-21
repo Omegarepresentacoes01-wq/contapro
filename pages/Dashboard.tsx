@@ -130,6 +130,18 @@ export const Dashboard = () => {
 
   const PIE_COLORS = ['#6366f1', '#f43f5e', '#f59e0b', '#10b981', '#06b6d4'];
 
+  const handlePrint = () => {
+    if (typeof window !== 'undefined') {
+        window.print();
+    }
+  };
+
+  const handleNewRecord = () => {
+    if (typeof window !== 'undefined') {
+        window.location.hash = '#/financeiro/receber';
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -138,10 +150,10 @@ export const Dashboard = () => {
           <p className="text-slate-500 text-sm mt-1 font-medium">Dados atualizados em tempo real conforme movimentações.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={() => window.print()} className="bg-white dark:bg-slate-900 border-2 font-bold">
+          <Button variant="outline" onClick={handlePrint} className="bg-white dark:bg-slate-900 border-2 font-bold">
             <FileDown className="mr-2 h-4 w-4" /> Relatório Rápido
           </Button>
-          <Button onClick={() => window.location.hash = '#/financeiro/receber'} className="shadow-lg shadow-primary/40 font-bold">
+          <Button onClick={handleNewRecord} className="shadow-lg shadow-primary/40 font-bold">
             + Novo Registro
           </Button>
         </div>

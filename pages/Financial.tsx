@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, Button, Input, Badge, Modal } from '../components/ui';
 import { Search, Filter, Plus, Trash2 } from 'lucide-react';
-import { formatCurrency, formatDate } from '../services/mocks';
+import { formatCurrency, formatDate, generateId } from '../services/mocks';
 import { Receivable, Payable } from '../types';
 import { useData } from '../context/DataContext';
 
@@ -56,7 +56,7 @@ export const Financial = ({ type }: FinancialProps) => {
   const handleSaveNew = () => {
     if (!newVal.name || !newVal.valor) return alert("Preencha os campos obrigatórios");
     
-    const id = Math.random().toString(36).substr(2, 9);
+    const id = generateId();
     if (isReceivable) {
       addReceivable({
         id, clientId: '99', clientName: newVal.name,

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, Button, Input, Badge, Modal } from '../components/ui';
 import { Search, Plus, User, Building, Trash2, Edit } from 'lucide-react';
-import { formatCurrency } from '../services/mocks';
+import { formatCurrency, generateId } from '../services/mocks';
 import { useData } from '../context/DataContext';
 
 interface RegistryProps {
@@ -32,7 +32,7 @@ export const Registry = ({ type }: RegistryProps) => {
   const handleSave = () => {
     if (!formData.nome || !formData.valor) return alert("Preencha os campos obrigatórios");
     
-    const id = Math.random().toString(36).substr(2, 9);
+    const id = generateId();
     if (isClient) {
       addClient({
         id, nome: formData.nome, cnpjCpf: formData.doc,

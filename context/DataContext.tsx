@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Client, Employee, Receivable, Payable, Payroll } from '../types';
-import { mockClients, mockEmployees, mockReceivables, mockPayables, mockPayroll } from '../services/mocks';
+import { mockClients, mockEmployees, mockReceivables, mockPayables, mockPayroll, safeLocalStorage, generateId } from '../services/mocks';
 
 interface DataContextType {
   clients: Client[];
@@ -26,28 +26,39 @@ interface DataContextType {
 const DataContext = createContext<DataContextType>(null!);
 
 export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
-  const loadData = (key: string, defaultValue: any) => {
-    try {
-      const saved = localStorage.getItem(`contapro_${key}`);
-      return saved ? JSON.parse(saved) : defaultValue;
-    } catch (e) {
-      return defaultValue;
-    }
-  };
+  // Inicializa com mocks padrão para garantir consistência entre SSR e primeiro render
+  const [clients, setClients] = useState<Client[]>(mockClients);
+  const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
+  const [receivables, setReceivables] = useState<Receivable[]>(mockReceivables);
+  const [payables, setPayables] = useState<Payable[]>(mockPayables);
+  const [payroll, setPayroll] = useState<Payroll[]>(mockPayroll);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  const [clients, setClients] = useState<Client[]>(() => loadData('clients', mockClients));
-  const [employees, setEmployees] = useState<Employee[]>(() => loadData('employees', mockEmployees));
-  const [receivables, setReceivables] = useState<Receivable[]>(() => loadData('receivables', mockReceivables));
-  const [payables, setPayables] = useState<Payable[]>(() => loadData('payables', mockPayables));
-  const [payroll, setPayroll] = useState<Payroll[]>(() => loadData('payroll', mockPayroll));
-
+  // Carrega dados do LocalStorage apenas no cliente
   useEffect(() => {
-    localStorage.setItem('contapro_clients', JSON.stringify(clients));
-    localStorage.setItem('contapro_employees', JSON.stringify(employees));
-    localStorage.setItem('contapro_receivables', JSON.stringify(receivables));
-    localStorage.setItem('contapro_payables', JSON.stringify(payables));
-    localStorage.setItem('contapro_payroll', JSON.stringify(payroll));
-  }, [clients, employees, receivables, payables, payroll]);
+    const loadData = (key: string, currentData: any) => {
+      const saved = safeLocalStorage.getItem(`contapro_${key}`);
+      return saved ? JSON.parse(saved) : currentData;
+    };
+
+    setClients(loadData('clients', mockClients));
+    setEmployees(loadData('employees', mockEmployees));
+    setReceivables(loadData('receivables', mockReceivables));
+    setPayables(loadData('payables', mockPayables));
+    setPayroll(loadData('payroll', mockPayroll));
+    setIsLoaded(true);
+  }, []);
+
+  // Salva alterações no localStorage
+  useEffect(() => {
+    if (isLoaded) {
+      safeLocalStorage.setItem('contapro_clients', JSON.stringify(clients));
+      safeLocalStorage.setItem('contapro_employees', JSON.stringify(employees));
+      safeLocalStorage.setItem('contapro_receivables', JSON.stringify(receivables));
+      safeLocalStorage.setItem('contapro_payables', JSON.stringify(payables));
+      safeLocalStorage.setItem('contapro_payroll', JSON.stringify(payroll));
+    }
+  }, [clients, employees, receivables, payables, payroll, isLoaded]);
 
   const addClient = (client: Client) => setClients(prev => [client, ...prev]);
   const updateClient = (client: Client) => setClients(prev => prev.map(c => c.id === client.id ? client : c));
@@ -57,7 +68,7 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
     setEmployees(prev => [emp, ...prev]);
     // Gera automaticamente uma entrada na folha para o novo funcionário
     const newPayroll: Payroll = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: generateId(),
         employeeId: emp.id,
         employeeName: emp.nome,
         competencia: new Date().toISOString().slice(0, 7),

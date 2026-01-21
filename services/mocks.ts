@@ -1,4 +1,53 @@
+
 import { Client, Employee, Receivable, Payable, Payroll, CostCenter } from '../types';
+
+// --- Utilities ---
+
+export const generateId = () => {
+  // Prioritize crypto.randomUUID which is available in modern Node.js and Browsers
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  
+  // Fallback safe for client-side only (avoid Math.random during server render if possible)
+  if (typeof window !== 'undefined') {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  }
+
+  // Fallback for server-side if crypto is missing (unlikely in modern envs)
+  return 'server-' + Date.now().toString(36);
+};
+
+export const safeLocalStorage = {
+  getItem: (key: string) => {
+    if (typeof window === 'undefined') return null;
+    try {
+      return localStorage.getItem(key);
+    } catch (e) {
+      return null;
+    }
+  },
+  setItem: (key: string, value: string) => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(key, value);
+      } catch (e) {
+        console.error('Error saving to localStorage', e);
+      }
+    }
+  },
+  removeItem: (key: string) => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem(key);
+      } catch (e) {
+        console.error('Error removing from localStorage', e);
+      }
+    }
+  }
+};
+
+// --- Mocks ---
 
 export const mockCostCenters: CostCenter[] = [
   { id: '1', nome: 'Operacional' },
