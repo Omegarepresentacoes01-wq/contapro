@@ -13,6 +13,7 @@ interface DataContextType {
   updateClient: (client: Client) => void;
   removeClient: (id: string) => void;
   addEmployee: (emp: Employee) => void;
+  updateEmployee: (emp: Employee) => void;
   removeEmployee: (id: string) => void;
   addReceivable: (rec: Receivable) => void;
   removeReceivable: (id: string) => void;
@@ -81,6 +82,22 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
     };
     setPayroll(prev => [newPayroll, ...prev]);
   };
+
+  const updateEmployee = (emp: Employee) => {
+    setEmployees(prev => prev.map(e => e.id === emp.id ? emp : e));
+    // Atualiza entradas da folha em aberto se houver mudança de salário ou nome
+    setPayroll(prev => prev.map(p => {
+        if (p.employeeId === emp.id && p.status === 'ABERTA') {
+            return {
+                ...p,
+                employeeName: emp.nome,
+                salarioBase: emp.salarioBase,
+                total: emp.salarioBase + p.beneficios + p.comissao - p.descontos
+            };
+        }
+        return p;
+    }));
+  };
   
   const removeEmployee = (id: string) => {
     setEmployees(prev => prev.filter(e => e.id !== id));
@@ -107,7 +124,7 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
   return (
     <DataContext.Provider value={{ 
       clients, employees, receivables, payables, payroll,
-      addClient, updateClient, removeClient, addEmployee, removeEmployee,
+      addClient, updateClient, removeClient, addEmployee, updateEmployee, removeEmployee,
       addReceivable, removeReceivable, addPayable, removePayable, markAsPaid, closePayroll,
       updatePayrollEntry
     }}>
