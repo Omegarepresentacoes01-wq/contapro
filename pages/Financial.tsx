@@ -17,6 +17,18 @@ const TIPOS_DOC = [
   { label: 'Pix', value: 'Pix' },
 ];
 
+const TIPOS_BENEFICIARIO = [
+  { label: 'Selecione a Classificação...', value: '' },
+  { label: 'Fornecedor', value: 'Fornecedor' },
+  { label: 'Funcionário', value: 'Funcionário' },
+  { label: 'Retirada', value: 'Retirada' },
+  { label: 'Compras Escritório', value: 'Compras Escritório' },
+  { label: 'Impostos Estadual', value: 'Impostos Estadual' },
+  { label: 'Impostos Federal', value: 'Impostos Federal' },
+  { label: 'Impostos Municipais', value: 'Impostos Municipais' },
+  { label: 'Outros', value: 'Outros' },
+];
+
 const CAT_RECEITAS = [
   { label: 'Selecione a Receita...', value: '' },
   { label: 'Receita com Consultoria', value: 'Receita com Consultoria' },
@@ -96,7 +108,8 @@ export const Financial = ({ type }: FinancialProps) => {
     tipoDocumento: '',
     categoria: '',
     descricao: '',
-    parcelas: '1'
+    parcelas: '1',
+    tipoBeneficiario: '' // Novo campo para classificação
   });
 
   const filteredData = data.filter(item => {
@@ -151,9 +164,14 @@ export const Financial = ({ type }: FinancialProps) => {
         parcelas: Number(newVal.parcelas)
       });
     } else {
+      // Se tiver tipo definido e não for "Fornecedor" simples, concatena para clareza
+      const supplierName = (newVal.tipoBeneficiario && newVal.tipoBeneficiario !== 'Fornecedor') 
+          ? `${newVal.tipoBeneficiario} - ${newVal.name}` 
+          : newVal.name;
+
       addPayable({
         id, 
-        fornecedor: newVal.name, 
+        fornecedor: supplierName, 
         categoria: newVal.categoria || 'Outros Gastos Não Operacionais',
         centroCustoId: '1', 
         centroCustoName: 'Geral',
@@ -170,7 +188,7 @@ export const Financial = ({ type }: FinancialProps) => {
     // Reset state
     setNewVal({ 
         name: '', valor: '', vencimento: '', competencia: new Date().toISOString().slice(0, 7),
-        banco: '', tipoDocumento: '', categoria: '', descricao: '', parcelas: '1'
+        banco: '', tipoDocumento: '', categoria: '', descricao: '', parcelas: '1', tipoBeneficiario: ''
     });
   };
 
@@ -262,11 +280,32 @@ export const Financial = ({ type }: FinancialProps) => {
 
       <Modal isOpen={isNewModalOpen} onClose={() => setIsNewModalOpen(false)} title={isReceivable ? "Nova Receita" : "Nova Despesa"}>
         <div className="space-y-4 py-2 max-h-[70vh] overflow-y-auto pr-2">
-            {/* Linha 1: Nome */}
-            <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">{isReceivable ? 'Cliente *' : 'Fornecedor *'}</label>
-                <Input value={newVal.name} onChange={e => setNewVal({...newVal, name: e.target.value})} placeholder={isReceivable ? "Nome do Cliente" : "Nome do Fornecedor"} />
-            </div>
+            {/* Linha 1: Nome (Com classificação para Despesas) */}
+            {isReceivable ? (
+                <div className="space-y-1">
+                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Cliente *</label>
+                    <Input value={newVal.name} onChange={e => setNewVal({...newVal, name: e.target.value})} placeholder="Nome do Cliente" />
+                </div>
+            ) : (
+                <div className="grid grid-cols-12 gap-4">
+                    <div className="col-span-12 sm:col-span-5 space-y-1">
+                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Classificação *</label>
+                        <Select 
+                            value={newVal.tipoBeneficiario} 
+                            onChange={v => setNewVal({...newVal, tipoBeneficiario: v})} 
+                            options={TIPOS_BENEFICIARIO} 
+                        />
+                    </div>
+                    <div className="col-span-12 sm:col-span-7 space-y-1">
+                        <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Nome do Favorecido *</label>
+                        <Input 
+                            value={newVal.name} 
+                            onChange={e => setNewVal({...newVal, name: e.target.value})} 
+                            placeholder={newVal.tipoBeneficiario === 'Retirada' ? "Nome do Sócio" : (newVal.tipoBeneficiario === 'Funcionário' ? "Nome do Colaborador" : "Nome do Fornecedor")} 
+                        />
+                    </div>
+                </div>
+            )}
 
             {/* Linha 2: Descrição */}
             <div className="space-y-1">

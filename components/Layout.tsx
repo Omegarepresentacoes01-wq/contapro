@@ -16,7 +16,8 @@ import {
   Moon,
   ChevronDown,
   BarChart3,
-  X
+  X,
+  Truck
 } from 'lucide-react';
 import { Button, Input } from './ui';
 import { useAuth } from '../App';
@@ -63,6 +64,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
     { to: '/financeiro/fluxo-caixa', icon: BarChart3, label: 'Fluxo de Caixa' },
     { to: '/cadastros/clientes', icon: Users, label: 'Clientes' },
     { to: '/cadastros/funcionarios', icon: Users, label: 'Funcionários' },
+    { to: '/cadastros/fornecedores', icon: Truck, label: 'Fornecedores' },
     { to: '/folha/pagamento', icon: FileText, label: 'Folha de Pagamento' },
     { to: '/relatorios', icon: FileText, label: 'Relatórios' },
   ];

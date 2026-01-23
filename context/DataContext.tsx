@@ -1,11 +1,12 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Client, Employee, Receivable, Payable, Payroll } from '../types';
-import { mockClients, mockEmployees, mockReceivables, mockPayables, mockPayroll, safeLocalStorage, generateId } from '../services/mocks';
+import { Client, Employee, Supplier, Receivable, Payable, Payroll } from '../types';
+import { mockClients, mockEmployees, mockSuppliers, mockReceivables, mockPayables, mockPayroll, safeLocalStorage, generateId } from '../services/mocks';
 
 interface DataContextType {
   clients: Client[];
   employees: Employee[];
+  suppliers: Supplier[];
   receivables: Receivable[];
   payables: Payable[];
   payroll: Payroll[];
@@ -16,6 +17,9 @@ interface DataContextType {
   addEmployee: (emp: Employee) => void;
   updateEmployee: (emp: Employee) => void;
   removeEmployee: (id: string) => void;
+  addSupplier: (sup: Supplier) => void;
+  updateSupplier: (sup: Supplier) => void;
+  removeSupplier: (id: string) => void;
   addReceivable: (rec: Receivable) => void;
   removeReceivable: (id: string) => void;
   addPayable: (pay: Payable) => void;
@@ -32,6 +36,7 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
   // Inicializa com mocks padrão para garantir consistência entre SSR e primeiro render
   const [clients, setClients] = useState<Client[]>(mockClients);
   const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
+  const [suppliers, setSuppliers] = useState<Supplier[]>(mockSuppliers);
   const [receivables, setReceivables] = useState<Receivable[]>(mockReceivables);
   const [payables, setPayables] = useState<Payable[]>(mockPayables);
   const [payroll, setPayroll] = useState<Payroll[]>(mockPayroll);
@@ -47,6 +52,7 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
 
     setClients(loadData('clients', mockClients));
     setEmployees(loadData('employees', mockEmployees));
+    setSuppliers(loadData('suppliers', mockSuppliers));
     setReceivables(loadData('receivables', mockReceivables));
     setPayables(loadData('payables', mockPayables));
     setPayroll(loadData('payroll', mockPayroll));
@@ -59,12 +65,13 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
     if (isLoaded) {
       safeLocalStorage.setItem('contapro_clients', JSON.stringify(clients));
       safeLocalStorage.setItem('contapro_employees', JSON.stringify(employees));
+      safeLocalStorage.setItem('contapro_suppliers', JSON.stringify(suppliers));
       safeLocalStorage.setItem('contapro_receivables', JSON.stringify(receivables));
       safeLocalStorage.setItem('contapro_payables', JSON.stringify(payables));
       safeLocalStorage.setItem('contapro_payroll', JSON.stringify(payroll));
       safeLocalStorage.setItem('contapro_banks', JSON.stringify(banks));
     }
-  }, [clients, employees, receivables, payables, payroll, banks, isLoaded]);
+  }, [clients, employees, suppliers, receivables, payables, payroll, banks, isLoaded]);
 
   const addClient = (client: Client) => setClients(prev => [client, ...prev]);
   const updateClient = (client: Client) => setClients(prev => prev.map(c => c.id === client.id ? client : c));
@@ -108,6 +115,10 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
     setEmployees(prev => prev.filter(e => e.id !== id));
     setPayroll(prev => prev.filter(p => p.employeeId !== id));
   };
+
+  const addSupplier = (sup: Supplier) => setSuppliers(prev => [sup, ...prev]);
+  const updateSupplier = (sup: Supplier) => setSuppliers(prev => prev.map(s => s.id === sup.id ? sup : s));
+  const removeSupplier = (id: string) => setSuppliers(prev => prev.filter(s => s.id !== id));
   
   const addReceivable = (rec: Receivable) => setReceivables(prev => [rec, ...prev]);
   const removeReceivable = (id: string) => setReceivables(prev => prev.filter(r => r.id !== id));
@@ -134,8 +145,8 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
 
   return (
     <DataContext.Provider value={{ 
-      clients, employees, receivables, payables, payroll, banks,
-      addClient, updateClient, removeClient, addEmployee, updateEmployee, removeEmployee,
+      clients, employees, suppliers, receivables, payables, payroll, banks,
+      addClient, updateClient, removeClient, addEmployee, updateEmployee, removeEmployee, addSupplier, updateSupplier, removeSupplier,
       addReceivable, removeReceivable, addPayable, removePayable, markAsPaid, closePayroll,
       updatePayrollEntry, addBank
     }}>

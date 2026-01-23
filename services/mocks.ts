@@ -1,5 +1,5 @@
 
-import { Client, Employee, Receivable, Payable, Payroll, CostCenter } from '../types';
+import { Client, Employee, Supplier, Receivable, Payable, Payroll, CostCenter } from '../types';
 
 // --- Utilities ---
 
@@ -64,6 +64,13 @@ export const mockEmployees: Employee[] = [
   { id: '2', nome: 'Carlos Souza', cargo: 'Analista Fiscal', salarioBase: 3500, tipoContrato: 'CLT', status: 'ATIVO' },
   { id: '3', nome: 'Roberto Alves', cargo: 'Desenvolvedor', salarioBase: 8000, tipoContrato: 'PJ', status: 'ATIVO' },
   { id: '4', nome: 'Julia Lima', cargo: 'Assistente RH', salarioBase: 2200, tipoContrato: 'Estágio', status: 'ATIVO' },
+];
+
+export const mockSuppliers: Supplier[] = [
+  { id: '1', nome: 'Papelaria Central', cnpj: '44.555.666/0001-00', categoria: 'Material de Expediente', contato: 'vendas@papelaria.com', status: 'ATIVO' },
+  { id: '2', nome: 'AWS Services', cnpj: 'EX-0000001', categoria: 'Software / TI', contato: 'support@aws.com', status: 'ATIVO' },
+  { id: '3', nome: 'Limpeza Total', cnpj: '22.333.444/0001-88', categoria: 'Limpeza e Conservação', contato: 'contato@limpezatotal.com.br', status: 'ATIVO' },
+  { id: '4', nome: 'Advocacia Mendes', cnpj: '99.888.777/0001-11', categoria: 'Serviços Jurídicos', contato: 'mendes@advocacia.com', status: 'ATIVO' },
 ];
 
 export const mockReceivables: Receivable[] = [

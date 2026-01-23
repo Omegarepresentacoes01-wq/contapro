@@ -20,6 +20,15 @@ export interface Employee {
   status: 'ATIVO' | 'INATIVO';
 }
 
+export interface Supplier {
+  id: string;
+  nome: string;
+  cnpj: string;
+  categoria: string;
+  contato: string;
+  status: 'ATIVO' | 'INATIVO';
+}
+
 export interface Receivable {
   id: string;
   clientId: string;
