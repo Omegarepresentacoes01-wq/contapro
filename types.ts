@@ -1,3 +1,4 @@
+
 export type Status = 'PENDENTE' | 'PAGO' | 'ATRASADO' | 'PARCIAL' | 'ABERTA' | 'FECHADA' | 'ATIVO' | 'INATIVO';
 
 export interface Client {
@@ -27,7 +28,13 @@ export interface Receivable {
   vencimento: string;
   valor: number;
   status: 'PENDENTE' | 'PAGO' | 'ATRASADO' | 'PARCIAL';
-  formaPagamento: string;
+  formaPagamento: string; // Mantido para compatibilidade, mas usaremos tipoDocumento na UI
+  // Novos campos operacionais
+  banco?: string;
+  tipoDocumento?: 'Boleto' | 'Débito Automático' | 'Pix';
+  categoria?: string;
+  descricao?: string;
+  parcelas?: number;
   pagoEm?: string;
 }
 
@@ -40,6 +47,11 @@ export interface Payable {
   vencimento: string;
   valor: number;
   status: 'PENDENTE' | 'PAGO' | 'ATRASADO';
+  // Novos campos operacionais
+  banco?: string;
+  tipoDocumento?: 'Boleto' | 'Débito Automático' | 'Pix';
+  descricao?: string;
+  parcelas?: number;
   pagoEm?: string;
 }
 

@@ -9,6 +9,7 @@ interface DataContextType {
   receivables: Receivable[];
   payables: Payable[];
   payroll: Payroll[];
+  banks: string[];
   addClient: (client: Client) => void;
   updateClient: (client: Client) => void;
   removeClient: (id: string) => void;
@@ -22,6 +23,7 @@ interface DataContextType {
   markAsPaid: (type: 'rec' | 'pay', id: string) => void;
   closePayroll: () => void;
   updatePayrollEntry: (entry: Payroll) => void;
+  addBank: (name: string) => void;
 }
 
 const DataContext = createContext<DataContextType>(null!);
@@ -33,6 +35,7 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
   const [receivables, setReceivables] = useState<Receivable[]>(mockReceivables);
   const [payables, setPayables] = useState<Payable[]>(mockPayables);
   const [payroll, setPayroll] = useState<Payroll[]>(mockPayroll);
+  const [banks, setBanks] = useState<string[]>(['Sicoob', 'Oteropay']);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Carrega dados do LocalStorage apenas no cliente
@@ -47,6 +50,7 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
     setReceivables(loadData('receivables', mockReceivables));
     setPayables(loadData('payables', mockPayables));
     setPayroll(loadData('payroll', mockPayroll));
+    setBanks(loadData('banks', ['Sicoob', 'Oteropay']));
     setIsLoaded(true);
   }, []);
 
@@ -58,8 +62,9 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
       safeLocalStorage.setItem('contapro_receivables', JSON.stringify(receivables));
       safeLocalStorage.setItem('contapro_payables', JSON.stringify(payables));
       safeLocalStorage.setItem('contapro_payroll', JSON.stringify(payroll));
+      safeLocalStorage.setItem('contapro_banks', JSON.stringify(banks));
     }
-  }, [clients, employees, receivables, payables, payroll, isLoaded]);
+  }, [clients, employees, receivables, payables, payroll, banks, isLoaded]);
 
   const addClient = (client: Client) => setClients(prev => [client, ...prev]);
   const updateClient = (client: Client) => setClients(prev => prev.map(c => c.id === client.id ? client : c));
@@ -121,12 +126,18 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
   const closePayroll = () => setPayroll(prev => prev.map(p => ({ ...p, status: 'FECHADA' })));
   const updatePayrollEntry = (entry: Payroll) => setPayroll(prev => prev.map(p => p.id === entry.id ? entry : p));
 
+  const addBank = (name: string) => {
+    if (!banks.includes(name)) {
+      setBanks(prev => [...prev, name]);
+    }
+  };
+
   return (
     <DataContext.Provider value={{ 
-      clients, employees, receivables, payables, payroll,
+      clients, employees, receivables, payables, payroll, banks,
       addClient, updateClient, removeClient, addEmployee, updateEmployee, removeEmployee,
       addReceivable, removeReceivable, addPayable, removePayable, markAsPaid, closePayroll,
-      updatePayrollEntry
+      updatePayrollEntry, addBank
     }}>
       {children}
     </DataContext.Provider>
