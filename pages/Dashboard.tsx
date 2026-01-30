@@ -50,7 +50,7 @@ const KPICard = ({ title, value, change, trend, icon: Icon, link, variant }: any
     <Link to={link || '#'}>
       <Card className={`group transition-all duration-300 hover:-translate-y-1 ${variants[variant]}`}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-500">{title}</CardTitle>
+          <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">{title}</CardTitle>
           <div className={`p-2 rounded-lg shadow-sm ${iconColors[variant]}`}>
             <Icon className="h-4 w-4" />
           </div>
@@ -58,11 +58,11 @@ const KPICard = ({ title, value, change, trend, icon: Icon, link, variant }: any
         <CardContent>
           <div className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">{value}</div>
           <div className="flex items-center mt-2">
-            <div className={`flex items-center text-xs font-bold px-1.5 py-0.5 rounded ${trend === 'up' ? 'text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30' : 'text-rose-600 bg-rose-100 dark:bg-rose-900/30'}`}>
+            <div className={`flex items-center text-xs font-bold px-1.5 py-0.5 rounded ${trend === 'up' ? 'text-emerald-700 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400' : 'text-rose-700 bg-rose-100 dark:bg-rose-900/30 dark:text-rose-400'}`}>
               {trend === 'up' ? <ArrowUpRight className="h-3 w-3 mr-0.5" /> : <ArrowDownRight className="h-3 w-3 mr-0.5" />}
               {change}
             </div>
-            <span className="text-[10px] text-slate-500 ml-2 font-medium">vs último período</span>
+            <span className="text-[10px] text-slate-600 dark:text-slate-400 ml-2 font-medium">vs último período</span>
           </div>
         </CardContent>
       </Card>
@@ -147,7 +147,7 @@ export const Dashboard = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white">Dashboard <span className="text-primary">Geral</span></h1>
-          <p className="text-slate-500 text-sm mt-1 font-medium">Dados atualizados em tempo real conforme movimentações.</p>
+          <p className="text-slate-600 dark:text-slate-400 text-sm mt-1 font-medium">Dados atualizados em tempo real conforme movimentações.</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={handlePrint} className="bg-white dark:bg-slate-900 border-2 font-bold">
@@ -221,7 +221,7 @@ export const Dashboard = () => {
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-12">
         <Card className="lg:col-span-8 shadow-xl">
           <CardHeader className="bg-slate-50/50 dark:bg-slate-800/50 border-b-2 border-slate-100 dark:border-slate-800">
-            <CardTitle className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+            <CardTitle className="text-xs font-black uppercase tracking-widest flex items-center gap-2 text-slate-600 dark:text-slate-300">
               <TrendingUp className="h-4 w-4 text-primary" /> Fluxo de Caixa Mensal
             </CardTitle>
           </CardHeader>
@@ -240,8 +240,8 @@ export const Dashboard = () => {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="name" tick={{fontSize: 11, fill: '#64748b', fontWeight: 800}} axisLine={false} tickLine={false} />
-                  <YAxis tick={{fontSize: 11, fill: '#64748b', fontWeight: 800}} axisLine={false} tickLine={false} tickFormatter={(val) => `R$${val}`} />
+                  <XAxis dataKey="name" tick={{fontSize: 11, fill: '#475569', fontWeight: 700}} axisLine={false} tickLine={false} />
+                  <YAxis tick={{fontSize: 11, fill: '#475569', fontWeight: 700}} axisLine={false} tickLine={false} tickFormatter={(val) => `R$${val}`} />
                   <Tooltip contentStyle={{ borderRadius: '12px', border: '2px solid #e2e8f0', fontWeight: '800' }} />
                   <Area type="monotone" dataKey="entrada" name="Entradas" stroke="#2563eb" strokeWidth={4} fill="url(#colorEntrada)" />
                   <Area type="monotone" dataKey="saida" name="Saídas" stroke="#f43f5e" strokeWidth={4} fill="url(#colorSaida)" />
@@ -253,7 +253,7 @@ export const Dashboard = () => {
 
         <Card className="lg:col-span-4 shadow-xl">
           <CardHeader className="bg-slate-50/50 dark:bg-slate-800/50 border-b-2 border-slate-100 dark:border-slate-800">
-            <CardTitle className="text-xs font-black uppercase tracking-widest">Despesas por Setor</CardTitle>
+            <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">Despesas por Setor</CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="h-[280px] w-full">
@@ -273,7 +273,7 @@ export const Dashboard = () => {
                 <div key={item.name} className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }} />
-                    <span className="text-slate-600">{item.name}</span>
+                    <span className="text-slate-700 dark:text-slate-300">{item.name}</span>
                   </div>
                   <span className="text-slate-900 dark:text-white">{formatCurrency(item.value)}</span>
                 </div>
@@ -285,12 +285,12 @@ export const Dashboard = () => {
 
       <Card className="shadow-xl border-2">
         <CardHeader className="bg-slate-50/50 dark:bg-slate-800/50 border-b-2">
-          <CardTitle className="text-xs font-black uppercase tracking-widest">Recentes no Sistema</CardTitle>
+          <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">Recentes no Sistema</CardTitle>
         </CardHeader>
         <CardContent className="p-0 overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-slate-50/30 dark:bg-slate-800/30 border-b-2">
-                <tr className="text-left text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <tr className="text-left text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
                   <th className="p-4">Beneficiário</th>
                   <th className="p-4">Vencimento</th>
                   <th className="p-4 text-right">Valor</th>
@@ -300,9 +300,9 @@ export const Dashboard = () => {
               <tbody>
                 {receivables.slice(0, 5).map((item) => (
                   <tr key={item.id} className="border-b-2 border-slate-50 dark:border-slate-800 hover:bg-slate-100/50 dark:hover:bg-slate-800/50">
-                    <td className="p-4 font-bold">{item.clientName}</td>
-                    <td className="p-4 font-medium text-slate-500">{item.vencimento}</td>
-                    <td className="p-4 text-right font-black">{formatCurrency(item.valor)}</td>
+                    <td className="p-4 font-bold text-slate-700 dark:text-slate-200">{item.clientName}</td>
+                    <td className="p-4 font-medium text-slate-600 dark:text-slate-400">{item.vencimento}</td>
+                    <td className="p-4 text-right font-black text-slate-900 dark:text-white">{formatCurrency(item.valor)}</td>
                     <td className="p-4 text-center">
                       <Badge variant={item.status === 'PAGO' ? 'success' : 'warning'}>{item.status}</Badge>
                     </td>

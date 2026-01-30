@@ -1,3 +1,4 @@
+
 import React, { InputHTMLAttributes, ButtonHTMLAttributes, forwardRef } from 'react';
 
 // --- Utils ---
@@ -43,7 +44,7 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
       <input
         ref={ref}
         className={cn(
-          "flex h-11 w-full rounded-lg border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 transition-all",
+          "flex h-11 w-full rounded-lg border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 transition-all text-slate-900 dark:text-slate-100",
           className
         )}
         {...props}
@@ -55,7 +56,7 @@ Input.displayName = "Input";
 
 // --- Card ---
 export const Card = ({ className, children }: { className?: string, children?: React.ReactNode }) => (
-  <div className={cn("rounded-xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-card-foreground shadow-sm hover:shadow-md transition-shadow duration-300", className)}>
+  <div className={cn("rounded-xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-950 dark:text-slate-50 shadow-sm hover:shadow-md transition-shadow duration-300", className)}>
     {children}
   </div>
 );
@@ -65,7 +66,7 @@ export const CardHeader = ({ className, children }: { className?: string, childr
 );
 
 export const CardTitle = ({ className, children }: { className?: string, children?: React.ReactNode }) => (
-  <h3 className={cn("text-lg font-bold leading-none tracking-tight text-slate-900 dark:text-white", className)}>{children}</h3>
+  <h3 className={cn("text-lg font-bold leading-none tracking-tight text-slate-950 dark:text-white", className)}>{children}</h3>
 );
 
 export const CardContent = ({ className, children }: { className?: string, children?: React.ReactNode }) => (
@@ -77,10 +78,10 @@ export const Badge = ({ children, variant = 'default', className }: { children?:
   const variants = {
     default: "border-transparent bg-primary text-primary-foreground",
     secondary: "border-transparent bg-secondary text-secondary-foreground",
-    destructive: "border-transparent bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400",
-    outline: "text-slate-600 border-2 border-slate-200",
-    success: "border-transparent bg-emerald-100 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400",
-    warning: "border-transparent bg-amber-100 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400"
+    destructive: "border-transparent bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+    outline: "text-slate-700 dark:text-slate-300 border-2 border-slate-200 dark:border-slate-700",
+    success: "border-transparent bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+    warning: "border-transparent bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
   };
   return (
     <div className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-colors", variants[variant], className)}>
@@ -112,7 +113,7 @@ export const Select = ({ value, onChange, options, className }: { value: string,
     <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={cn("flex h-11 w-full items-center justify-between rounded-lg border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all", className)}
+        className={cn("flex h-11 w-full items-center justify-between rounded-lg border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all text-slate-900 dark:text-slate-100", className)}
     >
         {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
     </select>
