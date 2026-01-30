@@ -138,7 +138,15 @@ export const Financial = ({ type }: FinancialProps) => {
 
   const handleSaveBank = () => {
     if (!newBankName.trim()) return;
-    addBank(newBankName.trim());
+    // Adiciona banco simplificado via modal rápido (saldo 0)
+    addBank({
+        id: generateId(),
+        nome: newBankName.trim(),
+        agencia: '',
+        conta: '',
+        saldo: 0,
+        status: 'ATIVO'
+    });
     setNewBankName('');
     setIsBankModalOpen(false);
   };
@@ -341,7 +349,7 @@ export const Financial = ({ type }: FinancialProps) => {
                         <Select 
                             value={newVal.banco} 
                             onChange={v => setNewVal({...newVal, banco: v})} 
-                            options={[{ label: 'Selecione o Banco...', value: '' }, ...banks.map(b => ({ label: b, value: b }))]} 
+                            options={[{ label: 'Selecione o Banco...', value: '' }, ...banks.map(b => ({ label: b.nome, value: b.nome }))]} 
                             className="flex-1"
                         />
                         <Button 
@@ -376,7 +384,7 @@ export const Financial = ({ type }: FinancialProps) => {
         </div>
       </Modal>
 
-      {/* Modal para Adicionar Novo Banco */}
+      {/* Modal para Adicionar Novo Banco (Simplificado) */}
       <Modal isOpen={isBankModalOpen} onClose={() => setIsBankModalOpen(false)} title="Incluir Novo Banco">
         <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -388,9 +396,10 @@ export const Financial = ({ type }: FinancialProps) => {
                     autoFocus
                 />
             </div>
+             <p className="text-xs text-slate-400">Para adicionar detalhes de agência e saldo inicial, utilize o menu "Bancos".</p>
             <div className="flex justify-end gap-3 pt-4">
                 <Button variant="outline" onClick={() => setIsBankModalOpen(false)}>Cancelar</Button>
-                <Button onClick={handleSaveBank} className="font-bold">Adicionar</Button>
+                <Button onClick={handleSaveBank} className="font-bold">Adicionar Rápido</Button>
             </div>
         </div>
       </Modal>

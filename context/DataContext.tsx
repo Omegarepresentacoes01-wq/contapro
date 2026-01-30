@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Client, Employee, Supplier, Receivable, Payable, Payroll } from '../types';
-import { mockClients, mockEmployees, mockSuppliers, mockReceivables, mockPayables, mockPayroll, safeLocalStorage, generateId } from '../services/mocks';
+import { Client, Employee, Supplier, Bank, Receivable, Payable, Payroll } from '../types';
+import { mockClients, mockEmployees, mockSuppliers, mockBanks, mockReceivables, mockPayables, mockPayroll, safeLocalStorage, generateId } from '../services/mocks';
 
 interface DataContextType {
   clients: Client[];
@@ -10,7 +10,7 @@ interface DataContextType {
   receivables: Receivable[];
   payables: Payable[];
   payroll: Payroll[];
-  banks: string[];
+  banks: Bank[];
   addClient: (client: Client) => void;
   updateClient: (client: Client) => void;
   removeClient: (id: string) => void;
@@ -27,7 +27,9 @@ interface DataContextType {
   markAsPaid: (type: 'rec' | 'pay', id: string) => void;
   closePayroll: () => void;
   updatePayrollEntry: (entry: Payroll) => void;
-  addBank: (name: string) => void;
+  addBank: (bank: Bank) => void;
+  updateBank: (bank: Bank) => void;
+  removeBank: (id: string) => void;
 }
 
 const DataContext = createContext<DataContextType>(null!);
@@ -40,7 +42,7 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
   const [receivables, setReceivables] = useState<Receivable[]>(mockReceivables);
   const [payables, setPayables] = useState<Payable[]>(mockPayables);
   const [payroll, setPayroll] = useState<Payroll[]>(mockPayroll);
-  const [banks, setBanks] = useState<string[]>(['Sicoob', 'Oteropay']);
+  const [banks, setBanks] = useState<Bank[]>(mockBanks);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Carrega dados do LocalStorage apenas no cliente
@@ -56,7 +58,7 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
     setReceivables(loadData('receivables', mockReceivables));
     setPayables(loadData('payables', mockPayables));
     setPayroll(loadData('payroll', mockPayroll));
-    setBanks(loadData('banks', ['Sicoob', 'Oteropay']));
+    setBanks(loadData('banks', mockBanks));
     setIsLoaded(true);
   }, []);
 
@@ -126,29 +128,55 @@ export const DataProvider = ({ children }: { children?: React.ReactNode }) => {
   const addPayable = (pay: Payable) => setPayables(prev => [pay, ...prev]);
   const removePayable = (id: string) => setPayables(prev => prev.filter(p => p.id !== id));
 
+  // Funções de Bancos
+  const addBank = (bank: Bank) => setBanks(prev => [...prev, bank]);
+  const updateBank = (bank: Bank) => setBanks(prev => prev.map(b => b.id === bank.id ? bank : b));
+  const removeBank = (id: string) => setBanks(prev => prev.filter(b => b.id !== id));
+
+  const updateBankBalance = (bankName: string, amount: number, type: 'credit' | 'debit') => {
+    if (!bankName) return;
+    setBanks(prev => prev.map(b => {
+      if (b.nome === bankName) {
+        const newBalance = type === 'credit' ? b.saldo + amount : b.saldo - amount;
+        return { ...b, saldo: newBalance };
+      }
+      return b;
+    }));
+  };
+
   const markAsPaid = (type: 'rec' | 'pay', id: string) => {
     if (type === 'rec') {
-      setReceivables(prev => prev.map(r => r.id === id ? { ...r, status: 'PAGO', pagoEm: new Date().toISOString().split('T')[0] } : r));
+      // Recebimento -> Crédito no Banco
+      setReceivables(prev => prev.map(r => {
+        if (r.id === id && r.status !== 'PAGO') {
+          // Atualiza saldo se o status não era PAGO
+          if (r.banco) updateBankBalance(r.banco, r.valor, 'credit');
+          return { ...r, status: 'PAGO', pagoEm: new Date().toISOString().split('T')[0] };
+        }
+        return r;
+      }));
     } else {
-      setPayables(prev => prev.map(p => p.id === id ? { ...p, status: 'PAGO', pagoEm: new Date().toISOString().split('T')[0] } : p));
+      // Pagamento -> Débito no Banco
+      setPayables(prev => prev.map(p => {
+        if (p.id === id && p.status !== 'PAGO') {
+          // Atualiza saldo se o status não era PAGO
+          if (p.banco) updateBankBalance(p.banco, p.valor, 'debit');
+          return { ...p, status: 'PAGO', pagoEm: new Date().toISOString().split('T')[0] };
+        }
+        return p;
+      }));
     }
   };
 
   const closePayroll = () => setPayroll(prev => prev.map(p => ({ ...p, status: 'FECHADA' })));
   const updatePayrollEntry = (entry: Payroll) => setPayroll(prev => prev.map(p => p.id === entry.id ? entry : p));
 
-  const addBank = (name: string) => {
-    if (!banks.includes(name)) {
-      setBanks(prev => [...prev, name]);
-    }
-  };
-
   return (
     <DataContext.Provider value={{ 
       clients, employees, suppliers, receivables, payables, payroll, banks,
       addClient, updateClient, removeClient, addEmployee, updateEmployee, removeEmployee, addSupplier, updateSupplier, removeSupplier,
       addReceivable, removeReceivable, addPayable, removePayable, markAsPaid, closePayroll,
-      updatePayrollEntry, addBank
+      updatePayrollEntry, addBank, updateBank, removeBank
     }}>
       {children}
     </DataContext.Provider>

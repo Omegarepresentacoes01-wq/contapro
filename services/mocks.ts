@@ -1,15 +1,20 @@
 
-import { Client, Employee, Supplier, Receivable, Payable, Payroll, CostCenter } from '../types';
+import { Client, Employee, Supplier, Bank, Receivable, Payable, Payroll, CostCenter } from '../types';
 
 // --- Utilities ---
 
 export const generateId = () => {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+  // Prioriza Crypto API moderna (Disponível em Node 19+ e Browsers modernos)
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
   }
+  
+  // Fallback para Browser (Client-side apenas)
   if (typeof window !== 'undefined') {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
   }
+  
+  // Fallback para Servidor (Sem Math.random, determinístico baseado em tempo)
   return 'server-' + Date.now().toString(36);
 };
 
@@ -49,6 +54,12 @@ export const mockCostCenters: CostCenter[] = [
   { id: '2', nome: 'Administrativo' },
   { id: '3', nome: 'Marketing' },
   { id: '4', nome: 'TI' },
+];
+
+export const mockBanks: Bank[] = [
+  { id: '1', nome: 'Sicoob', agencia: '0001', conta: '12345-6', saldo: 15450.00, status: 'ATIVO' },
+  { id: '2', nome: 'Oteropay', agencia: '0001', conta: '99887-0', saldo: 5200.50, status: 'ATIVO' },
+  { id: '3', nome: 'Banco Inter', agencia: '0001', conta: '77777-7', saldo: 350.00, status: 'ATIVO' },
 ];
 
 export const mockClients: Client[] = [

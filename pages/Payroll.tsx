@@ -25,6 +25,8 @@ export const PayrollPage = () => {
   };
 
   const handlePrintHolerite = (item: Payroll) => {
+    if (typeof window === 'undefined') return;
+
     // Abre uma janela pop-up simples para impressão
     const printWindow = window.open('', '', 'width=800,height=600');
     if (printWindow) {

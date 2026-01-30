@@ -29,6 +29,15 @@ export interface Supplier {
   status: 'ATIVO' | 'INATIVO';
 }
 
+export interface Bank {
+  id: string;
+  nome: string;
+  agencia: string;
+  conta: string;
+  saldo: number;
+  status: 'ATIVO' | 'INATIVO';
+}
+
 export interface Receivable {
   id: string;
   clientId: string;

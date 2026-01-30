@@ -1,6 +1,8 @@
 
 // Utilitário para download de arquivos de texto/csv
 export const downloadFile = (content: string, filename: string, mimeType: string) => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

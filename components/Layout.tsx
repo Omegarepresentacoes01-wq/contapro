@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -17,7 +17,10 @@ import {
   ChevronDown,
   BarChart3,
   X,
-  Truck
+  Truck,
+  Landmark,
+  Maximize,
+  Minimize
 } from 'lucide-react';
 import { Button, Input } from './ui';
 import { useAuth } from '../App';
@@ -49,12 +52,33 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
   const { logout, user } = useAuth();
   const location = useLocation();
   const [isDark, setIsDark] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleFullScreenChange = () => {
+      setIsFullScreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullScreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullScreenChange);
+  }, []);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
     document.documentElement.classList.toggle('dark');
+  };
+
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((e) => {
+        console.error(`Error attempting to enable fullscreen mode: ${e.message} (${e.name})`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
   };
 
   const menuItems = [
@@ -65,6 +89,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
     { to: '/cadastros/clientes', icon: Users, label: 'Clientes' },
     { to: '/cadastros/funcionarios', icon: Users, label: 'Funcionários' },
     { to: '/cadastros/fornecedores', icon: Truck, label: 'Fornecedores' },
+    { to: '/cadastros/bancos', icon: Landmark, label: 'Bancos' },
     { to: '/folha/pagamento', icon: FileText, label: 'Folha de Pagamento' },
     { to: '/relatorios', icon: FileText, label: 'Relatórios' },
   ];
@@ -177,11 +202,19 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
           </div>
           
           <div className="w-full flex-1">
-             {/* Espaço flexível - Busca removida pois era apenas visual */}
+             {/* Espaço flexível */}
           </div>
           
           <div className="flex items-center gap-2 sm:gap-3">
-            <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+            <Button variant="ghost" size="icon" onClick={toggleFullScreen} className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" title={isFullScreen ? "Sair da Tela Cheia" : "Tela Cheia"}>
+              {isFullScreen ? (
+                <Minimize className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+              ) : (
+                <Maximize className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+              )}
+            </Button>
+
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" title="Alternar Tema">
               {isDark ? <Sun className="h-5 w-5 text-amber-400" /> : <Moon className="h-5 w-5 text-slate-600" />}
             </Button>
             
