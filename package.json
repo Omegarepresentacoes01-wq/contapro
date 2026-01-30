@@ -1,11 +1,10 @@
-
 {
   "name": "contacontabil-pro",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "engines": {
-    "node": "18.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "vite",
