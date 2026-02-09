@@ -63,7 +63,7 @@
 @media print {
   @page {
     size: A4;
-    margin: 1.5cm;
+    margin: 1cm;
   }
 
   * {
@@ -72,94 +72,143 @@
     color-adjust: exact !important;
   }
 
-  body {
+  html, body {
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
     background: white !important;
-    color: black !important;
+    color: #000 !important;
   }
 
-  /* Ocultar elementos que não devem aparecer no PDF */
-  .print\:hidden,
+  /* Ocultar COMPLETAMENTE sidebar, header e botões */
   aside,
   header,
   button,
-  [role="button"] {
+  [role="button"],
+  .print\:hidden {
     display: none !important;
+    visibility: hidden !important;
   }
 
-  /* Remover margens e paddings desnecessários */
-  .print\:ml-0 {
-    margin-left: 0 !important;
-  }
-
-  .print\:p-0 {
+  /* Container principal sem margens */
+  body > div,
+  #root,
+  #root > div {
+    margin: 0 !important;
     padding: 0 !important;
+    width: 100% !important;
   }
 
-  .print\:overflow-visible {
-    overflow: visible !important;
-  }
-
-  /* Garantir que o conteúdo principal ocupe toda a largura */
+  /* Main content ocupa 100% */
   main {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 0 !important;
     margin: 0 !important;
+    padding: 1cm !important;
+    overflow: visible !important;
   }
 
-  /* Melhorar a aparência de cards e tabelas */
-  table {
-    page-break-inside: auto;
-    border-collapse: collapse;
-    width: 100%;
+  /* Remover backgrounds escuros */
+  *:not(svg):not(path):not(circle):not(rect) {
+    background: white !important;
+    background-color: white !important;
   }
 
-  tr {
-    page-break-inside: avoid;
-    page-break-after: auto;
+  /* Texto em preto */
+  * {
+    color: #000 !important;
   }
 
-  thead {
-    display: table-header-group;
-  }
-
-  tfoot {
-    display: table-footer-group;
-  }
-
-  /* Evitar quebras de página em elementos importantes */
+  /* Títulos */
   h1, h2, h3, h4, h5, h6 {
+    color: #000 !important;
     page-break-after: avoid;
     page-break-inside: avoid;
   }
 
-  /* Cards e seções */
-  .card,
-  section {
+  /* Cards com bordas */
+  [class*="card"],
+  [class*="Card"] {
+    border: 1px solid #ccc !important;
+    background: white !important;
     page-break-inside: avoid;
+    margin-bottom: 0.5cm !important;
   }
 
-  /* Garantir que gráficos e imagens sejam impressos */
-  img, svg, canvas {
-    max-width: 100% !important;
-    page-break-inside: avoid;
+  /* Tabelas */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto;
   }
 
-  /* Melhorar contraste de texto */
-  * {
-    color: #000 !important;
-    background: transparent !important;
+  thead {
+    display: table-header-group !important;
   }
 
-  /* Manter bordas visíveis */
-  table, th, td {
+  tr {
+    page-break-inside: avoid !important;
+    page-break-after: auto !important;
+  }
+
+  th, td {
     border: 1px solid #000 !important;
+    padding: 8px !important;
+    text-align: left !important;
   }
 
-  /* Garantir que badges e status sejam visíveis */
-  .badge,
-  [class*="badge"] {
+  th {
+    background: #f0f0f0 !important;
+    font-weight: bold !important;
+  }
+
+  /* Gráficos e SVG */
+  svg {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid;
+  }
+
+  /* Preservar cores de gráficos */
+  svg * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Grid responsivo */
+  [class*="grid"] {
+    display: block !important;
+  }
+
+  [class*="grid"] > * {
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: 0.5cm !important;
+  }
+
+  /* Badges */
+  [class*="badge"],
+  [class*="Badge"] {
     border: 1px solid #000 !important;
     padding: 2px 6px !important;
+    background: white !important;
+  }
+
+  /* Remover sombras */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Links */
+  a {
+    text-decoration: none !important;
+    color: #000 !important;
+  }
+
+  /* Evitar quebras */
+  img, svg, canvas, video {
+    page-break-inside: avoid !important;
   }
 }
