@@ -149,7 +149,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
              </Button>
           </div>
         </div>
-      </div>
+      </aside>
 
       {/* Menu Mobile Overlay */}
       {isMobileMenuOpen && (
