@@ -167,10 +167,10 @@ export const Dashboard = () => {
       </div>
 
       {/* CARD DE INTELIGÊNCIA DE DADOS */}
-      <Card className="bg-slate-900 text-white border-none shadow-2xl relative overflow-hidden">
+      <Card className="bg-slate-900 text-white border-none shadow-2xl relative overflow-hidden print:bg-white print:text-black print:border print:border-gray-300">
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
         <CardHeader className="relative z-10 border-b border-white/10 pb-4">
-            <CardTitle className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-blue-200">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-blue-200 print:text-black">
                 <Lightbulb className="h-4 w-4 text-yellow-400" /> Insights do Sistema
             </CardTitle>
         </CardHeader>
@@ -182,8 +182,8 @@ export const Dashboard = () => {
                         <Target className="h-5 w-5 text-emerald-400" />
                     </div>
                     <div>
-                        <p className="text-xs font-bold uppercase text-slate-400 mb-1">Principal Fonte de Receita</p>
-                        <p className="font-medium text-slate-200 text-sm">
+                        <p className="text-xs font-bold uppercase text-slate-400 mb-1 print:text-gray-600">Principal Fonte de Receita</p>
+                        <p className="font-medium text-slate-200 text-sm print:text-black">
                             O cliente <span className="text-white font-bold">{insights.topClient.name}</span> representa <span className="text-emerald-400 font-bold">{insights.topClient.share}%</span> do seu faturamento total registrado.
                         </p>
                     </div>
@@ -195,8 +195,8 @@ export const Dashboard = () => {
                         <AlertTriangle className="h-5 w-5 text-rose-400" />
                     </div>
                     <div>
-                        <p className="text-xs font-bold uppercase text-slate-400 mb-1">Foco de Custos</p>
-                        <p className="font-medium text-slate-200 text-sm">
+                        <p className="text-xs font-bold uppercase text-slate-400 mb-1 print:text-gray-600">Foco de Custos</p>
+                        <p className="font-medium text-slate-200 text-sm print:text-black">
                             A categoria <span className="text-white font-bold">{insights.topCategory.name || 'N/A'}</span> é a que mais consome recursos, totalizando <span className="text-rose-400 font-bold">{formatCurrency(insights.topCategory.value)}</span>.
                         </p>
                     </div>
@@ -208,8 +208,8 @@ export const Dashboard = () => {
                         <Zap className="h-5 w-5 text-amber-400" />
                     </div>
                     <div>
-                        <p className="text-xs font-bold uppercase text-slate-400 mb-1">Impacto Operacional</p>
-                        <p className="font-medium text-slate-200 text-sm">
+                        <p className="text-xs font-bold uppercase text-slate-400 mb-1 print:text-gray-600">Impacto Operacional</p>
+                        <p className="font-medium text-slate-200 text-sm print:text-black">
                             A Folha de Pagamento compromete atualmente <span className="text-amber-400 font-bold">{insights.payrollImpact}%</span> de todas as saídas financeiras da empresa.
                         </p>
                     </div>

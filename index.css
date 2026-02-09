@@ -109,14 +109,22 @@
     overflow: visible !important;
   }
 
-  /* Remover backgrounds escuros */
-  *:not(svg):not(path):not(circle):not(rect) {
+  /* Remover backgrounds escuros - FORÇAR */
+  *:not(svg):not(path):not(circle):not(rect):not(line):not(polyline):not(polygon) {
     background: white !important;
     background-color: white !important;
+    background-image: none !important;
   }
 
-  /* Texto em preto */
-  * {
+  /* Texto em preto - FORÇAR */
+  *:not(svg):not(path):not(circle):not(rect):not(line):not(polyline):not(polygon) {
+    color: #000 !important;
+  }
+
+  /* Forçar spans e divs */
+  div, span, p, h1, h2, h3, h4, h5, h6 {
+    background: white !important;
+    background-color: white !important;
     color: #000 !important;
   }
 
