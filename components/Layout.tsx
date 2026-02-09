@@ -95,10 +95,10 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
   ];
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] bg-[#f8fafc] dark:bg-[#020617]">
+    <div className="flex min-h-screen w-full bg-[#f8fafc] dark:bg-[#020617]">
       {/* Sidebar - Desktop (Oculto na impressão e em mobile) */}
-      <div className="hidden border-r-2 border-slate-800/50 bg-[#0f172a] md:block shadow-2xl z-20 print:hidden">
-        <div className="flex h-full max-h-screen flex-col gap-4">
+      <aside className="hidden md:flex md:w-[240px] lg:w-[280px] md:flex-col border-r-2 border-slate-800/50 bg-[#0f172a] shadow-2xl print:hidden fixed inset-y-0 left-0 z-30">
+        <div className="flex h-full flex-col gap-4 overflow-y-auto">
           <div className="flex h-16 items-center px-6 border-b-2 border-slate-800/50 mb-4">
             <Link to="/" className="flex items-center gap-3">
               <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/40">
@@ -192,7 +192,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
       )}
 
       {/* Main Content */}
-      <div className="flex flex-col print:w-full print:block">
+      <div className="flex flex-col flex-1 w-full md:ml-[240px] lg:ml-[280px] print:ml-0">
         {/* Topbar (Oculto na impressão) */}
         <header className="flex h-16 items-center gap-4 border-b-2 border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 sticky top-0 z-10 print:hidden">
           <div className="flex items-center gap-2 md:hidden">

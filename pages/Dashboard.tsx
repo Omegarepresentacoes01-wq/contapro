@@ -48,7 +48,7 @@ const KPICard = ({ title, value, change, trend, icon: Icon, link, variant }: any
 
   return (
     <Link to={link || '#'}>
-      <Card className={`group transition-all duration-300 hover:-translate-y-1 ${variants[variant]}`}>
+      <Card className={`group transition-all duration-300 hover:-translate-y-1 ${variants[variant]} print:border print:border-gray-300 print:shadow-none`}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">{title}</CardTitle>
           <div className={`p-2 rounded-lg shadow-sm ${iconColors[variant]}`}>
@@ -149,7 +149,7 @@ export const Dashboard = () => {
           <h1 className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white">Dashboard <span className="text-primary">Geral</span></h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm mt-1 font-medium">Dados atualizados em tempo real conforme movimentações.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 print:hidden">
           <Button variant="outline" onClick={handlePrint} className="bg-white dark:bg-slate-900 border-2 font-bold">
             <FileDown className="mr-2 h-4 w-4" /> Relatório Rápido
           </Button>
