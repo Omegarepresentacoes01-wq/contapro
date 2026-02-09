@@ -99,12 +99,9 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
       {/* Sidebar - Desktop (Oculto na impressão e em mobile) */}
       <aside className="hidden md:flex md:w-[240px] lg:w-[280px] md:flex-col border-r-2 border-slate-800/50 bg-[#0f172a] shadow-2xl print:hidden fixed inset-y-0 left-0 z-30">
         <div className="flex h-full flex-col gap-4 overflow-y-auto">
-          <div className="flex h-16 items-center px-6 border-b-2 border-slate-800/50 mb-4">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/40">
-                <PieChart className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-white font-black text-xl tracking-tighter">CONTA<span className="text-blue-400">PRO</span></span>
+          <div className="flex h-20 items-center justify-center px-6 border-b-2 border-slate-800/50 mb-4">
+            <Link to="/" className="flex items-center justify-center w-full">
+              <img src="/logo.jpeg" alt="Contabilidade" className="h-16 w-auto object-contain" />
             </Link>
           </div>
           
@@ -157,10 +154,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
           <div className="fixed inset-y-0 left-0 z-50 w-3/4 max-w-xs border-r border-slate-800 bg-[#0f172a] p-6 shadow-2xl animate-in slide-in-from-left duration-300" onClick={e => e.stopPropagation()}>
              <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                    <PieChart className="h-4 w-4 text-white" />
-                  </div>
-                  <span className="text-white font-black text-lg">CONTA<span className="text-blue-400">PRO</span></span>
+                  <img src="/logo.jpeg" alt="Contabilidade" className="h-10 w-auto object-contain" />
                 </div>
                 <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)} className="text-slate-400">
                   <X className="h-6 w-6" />

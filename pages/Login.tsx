@@ -41,14 +41,11 @@ export const Login = () => {
 
       <Card className="w-full max-w-md shadow-2xl border-slate-200 dark:border-slate-800 relative z-10">
         <CardHeader className="text-center space-y-4 pb-8">
-            <div className="flex justify-center mb-2">
-                <div className="h-14 w-14 rounded-2xl bg-primary shadow-lg shadow-primary/30 flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
-                    <PieChart className="h-7 w-7 text-white" />
-                </div>
+            <div className="flex justify-center mb-4">
+                <img src="/logo.jpeg" alt="Contabilidade" className="h-24 w-auto object-contain" />
             </div>
           <div>
-            <CardTitle className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">ContaContábil <span className="text-primary">Pro</span></CardTitle>
-            <p className="text-sm text-slate-500 mt-2 font-medium">Dashboard financeiro inteligente</p>
+            <p className="text-sm text-slate-500 mt-2 font-medium">Sistema de Gestão Financeira</p>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
